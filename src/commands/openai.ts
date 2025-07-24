@@ -41,15 +41,22 @@ export const openai = cli()
     const baseURL = opts.baseURL;
     const contextWindowSize = parseNumber(opts.contextSize);
     
+    interface PluginConfig {
+      apiKey: string;
+      baseURL: string;
+      model: string;
+      contextWindowSize: number;
+    }
+
     const renamePlugin = openaiRename({
       apiKey,
       baseURL,
       model: opts.model,
       contextWindowSize
-    });
-    
+    }) as { config?: PluginConfig };
+
     // Store config for checkpoint-aware version
-    (renamePlugin as any).__config = {
+    renamePlugin.config = {
       apiKey,
       baseURL,
       model: opts.model,
