@@ -54,9 +54,9 @@ export async function visitAllIdentifiers(
     }
     markVisited(smallestScope, smallestScopeNode.name, visited);
 
-    onProgress?.(visited.size / numRenamesExpected);
+    onProgress?.(visited.size / numRenamesExpected, visited.size, numRenamesExpected);
   }
-  onProgress?.(1);
+  onProgress?.(1, numRenamesExpected, numRenamesExpected);
 
   const stringified = await transformFromAstAsync(ast);
   if (stringified?.code == null) {
