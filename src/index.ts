@@ -1,5 +1,6 @@
 #!/usr/bin/env -S npx tsx
-import { version } from "../package.json";
+import packageJson from "../package.json" with { type: "json" };
+const { version } = packageJson;
 import { download } from "./commands/download.js";
 import { local } from "./commands/local.js";
 import { openai } from "./commands/openai.js";
