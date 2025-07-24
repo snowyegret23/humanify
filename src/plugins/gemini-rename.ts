@@ -18,7 +18,7 @@ export function geminiRename({
 }) {
   const client = new GoogleGenerativeAI(apiKey);
 
-  return async (code: string): Promise<string> => {
+  const geminiRenamePlugin = async (code: string): Promise<string> => {
     return await visitAllIdentifiers(
       code,
       async (name, surroundingCode) => {
@@ -41,6 +41,11 @@ export function geminiRename({
       showPercentage
     );
   };
+  
+  // Set function name for identification
+  Object.defineProperty(geminiRenamePlugin, 'name', { value: 'geminiRename' });
+  
+  return geminiRenamePlugin;
 }
 
 function toRenameParams(name: string, model: string): ModelParams {

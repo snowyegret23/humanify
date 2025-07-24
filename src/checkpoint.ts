@@ -23,8 +23,9 @@ export class CheckpointManager {
   async ensureCheckpointDir(): Promise<void> {
     try {
       await fs.mkdir(this.checkpointDir, { recursive: true });
+      console.log(`Checkpoint directory created/verified at: ${this.checkpointDir}`);
     } catch (error) {
-      verbose.log("Error creating checkpoint directory:", error);
+      console.error("Error creating checkpoint directory:", error);
     }
   }
   
