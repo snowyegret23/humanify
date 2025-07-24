@@ -4,11 +4,11 @@ import { Identifier, toIdentifier, Node } from "@babel/types";
 import { CheckpointManager } from "../../checkpoint.js";
 import { verbose } from "../../verbose.js";
 
-const traverse: typeof babelTraverse.default.default = (
+const traverse: typeof babelTraverse.default = (
   typeof babelTraverse.default === "function"
     ? babelTraverse.default
     : babelTraverse.default.default
-) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+);
 
 type Visitor = (name: string, scope: string) => Promise<string>;
 
