@@ -22,16 +22,24 @@ function formatBytes(numBytes: number) {
   return `${numBytes.toFixed(2)} ${units[unitIndex]}`;
 }
 
-export function showPercentage(percentage: number) {
+export function showPercentage(percentage: number, current?: number, total?: number) {
   const percentageStr = Math.round(percentage * 100);
+  let progressText: string;
+  
+  if (current !== undefined && total !== undefined) {
+    progressText = `Processing: ${current}/${total}`;
+  } else {
+    progressText = `Processing: ${percentageStr}%`;
+  }
+  
   if (!verbose.enabled) {
     process.stdout.clearLine?.(0);
     process.stdout.cursorTo(0);
-    process.stdout.write(`Processing: ${percentageStr}%`);
+    process.stdout.write(progressText);
   } else {
-    verbose.log(`Processing: ${percentageStr}%`);
+    verbose.log(progressText);
   }
-  if (percentage === 1) {
+  if ((current !== undefined && total !== undefined && current === total) || percentage === 1) {
     process.stdout.write("\n");
   }
 }
