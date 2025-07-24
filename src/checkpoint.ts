@@ -88,7 +88,7 @@ export class CheckpointManager {
     }
   }
   
-  async savePartialResults(filename: string, data: any): Promise<void> {
+  async savePartialResults(filename: string, data: PartialResultsData): Promise<void> {
     await this.ensureCheckpointDir();
     
     const resultsFile = path.join(
