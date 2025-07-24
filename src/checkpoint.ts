@@ -8,7 +8,7 @@ interface CheckpointData {
   currentFileIndex: number;
   currentIdentifierIndex: number;
   timestamp: number;
-  code?: string;
+  // Remove code field - we don't need to store the entire code
 }
 
 export class CheckpointManager {
@@ -37,8 +37,7 @@ export class CheckpointManager {
       renames: Array.from(data.renames.entries()),
       currentFileIndex: data.currentFileIndex,
       currentIdentifierIndex: data.currentIdentifierIndex,
-      timestamp: data.timestamp,
-      code: data.code
+      timestamp: data.timestamp
     };
     
     try {
@@ -65,8 +64,7 @@ export class CheckpointManager {
         renames: new Map(parsed.renames),
         currentFileIndex: parsed.currentFileIndex,
         currentIdentifierIndex: parsed.currentIdentifierIndex,
-        timestamp: parsed.timestamp,
-        code: parsed.code
+        timestamp: parsed.timestamp
       };
     } catch (error: any) {
       // Only log if it's not a file not found error
