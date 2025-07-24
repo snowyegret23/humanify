@@ -30,7 +30,10 @@ export async function llama(opts: {
   verbose.log("Loading model with options", modelOpts);
   const model = await llama.loadModel(modelOpts);
 
-  const contextOpts: any = {};
+  interface LlamaContextOptions {
+    seed?: number;
+  }
+  const contextOpts: LlamaContextOptions = {};
   if (opts?.seed !== undefined) {
     contextOpts.seed = opts.seed;
   }
