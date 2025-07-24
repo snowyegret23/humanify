@@ -16,7 +16,7 @@ export function openaiRename({
 }) {
   const client = new OpenAI({ apiKey, baseURL });
 
-  return async (code: string): Promise<string> => {
+  const openaiRenamePlugin = async (code: string): Promise<string> => {
     return await visitAllIdentifiers(
       code,
       async (name, surroundingCode) => {
@@ -40,6 +40,11 @@ export function openaiRename({
       showPercentage
     );
   };
+  
+  // Set function name for identification
+  Object.defineProperty(openaiRenamePlugin, 'name', { value: 'openaiRename' });
+  
+  return openaiRenamePlugin;
 }
 
 function toRenamePrompt(

@@ -7,7 +7,7 @@ import { visitAllIdentifiers } from "./visit-all-identifiers.js";
 const PADDING_CHARS = 200;
 
 export const localReanme = (prompt: Prompt, contextWindowSize: number) => {
-  return async (code: string): Promise<string> => {
+  const localRenamePlugin = async (code: string): Promise<string> => {
     const filename = await defineFilename(
       prompt,
       code.slice(0, PADDING_CHARS * 2)
@@ -21,4 +21,9 @@ export const localReanme = (prompt: Prompt, contextWindowSize: number) => {
       showPercentage
     );
   };
+  
+  // Set function name for identification
+  Object.defineProperty(localRenamePlugin, 'name', { value: 'localRename' });
+  
+  return localRenamePlugin;
 };

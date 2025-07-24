@@ -65,17 +65,7 @@ export async function visitAllIdentifiersWithCheckpoint(
   
   let processedCount = startIndex;
   
-  // Save initial checkpoint if starting fresh
-  if (checkpointManager && startIndex === 0) {
-    console.log("Starting fresh, creating initial checkpoint...");
-    await checkpointManager.saveCheckpoint({
-      processedIdentifiers,
-      renames: renamesMap,
-      currentFileIndex: 0,
-      currentIdentifierIndex: 0,
-      timestamp: Date.now()
-    });
-  }
+  // Don't save initial checkpoint - wait for first rename
 
   try {
     for (let i = startIndex; i < scopes.length; i++) {
@@ -106,6 +96,15 @@ export async function visitAllIdentifiersWithCheckpoint(
         renames.add(safeRenamed);
         renamesMap.set(smallestScopeNode.name, safeRenamed);
         smallestScope.scope.rename(smallestScopeNode.name, safeRenamed);
+        
+        // Save individual rename result immediately
+        if (checkpointManager) {
+          await checkpointManager.savePartialResults(`rename_${Date.now()}_${smallestScopeNode.name}`, {
+            originalName: smallestScopeNode.name,
+            newName: safeRenamed,
+            timestamp: Date.now()
+          });
+        }
       }
       
       markVisited(smallestScope, smallestScopeNode.name, visited);
@@ -114,21 +113,15 @@ export async function visitAllIdentifiersWithCheckpoint(
 
       onProgress?.(processedCount / numRenamesExpected);
       
-      // Save checkpoint periodically
-      if (checkpointManager && processedCount > 0 && processedCount % saveInterval === 0) {
+      // Save checkpoint after every few identifiers (lightweight - no code)
+      if (checkpointManager && processedCount % 5 === 0) {
         console.log(`Processed ${processedCount} identifiers, saving checkpoint...`);
         await checkpointManager.saveCheckpoint({
           processedIdentifiers,
           renames: renamesMap,
-          currentFileIndex: 0, // Will be used when processing multiple files
+          currentFileIndex: 0,
           currentIdentifierIndex: processedCount,
           timestamp: Date.now()
-        });
-        
-        // Save partial results
-        await checkpointManager.savePartialResults(`identifiers_${processedCount}`, {
-          renames: Array.from(renamesMap.entries()),
-          processedCount
         });
       }
     }
@@ -141,8 +134,7 @@ export async function visitAllIdentifiersWithCheckpoint(
         renames: renamesMap,
         currentFileIndex: 0,
         currentIdentifierIndex: processedCount,
-        timestamp: Date.now(),
-        code
+        timestamp: Date.now()
       });
     }
     throw error;
