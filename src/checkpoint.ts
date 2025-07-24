@@ -41,13 +41,16 @@ export class CheckpointManager {
     };
     
     try {
+      console.log(`Saving checkpoint to: ${this.checkpointFile}`);
       await fs.writeFile(
         this.checkpointFile, 
         JSON.stringify(serializedData, null, 2)
       );
+      console.log(`Checkpoint saved successfully with ${data.processedIdentifiers.size} identifiers`);
       verbose.log(`Checkpoint saved at ${new Date(data.timestamp).toISOString()}`);
     } catch (error) {
       console.error("Failed to save checkpoint:", error);
+      console.error("Checkpoint file path:", this.checkpointFile);
     }
   }
   

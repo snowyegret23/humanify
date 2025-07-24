@@ -69,9 +69,11 @@ export async function unminifyWithCheckpoint(
             // If this is a rename plugin and checkpoint is enabled
             if (checkpointManager && (plugin as any).__config) {
               const pluginConfig = (plugin as any).__config;
+              console.log("Plugin name:", plugin.name, "Config:", !!pluginConfig);
               
               // OpenAI plugin
               if (plugin.name === 'openaiRename') {
+                console.log("Using OpenAI rename with checkpoint");
                 const { openaiRenameWithCheckpoint } = await import("./plugins/openai/openai-rename-with-checkpoint.js");
                 const checkpointAwarePlugin = openaiRenameWithCheckpoint({
                   ...pluginConfig,

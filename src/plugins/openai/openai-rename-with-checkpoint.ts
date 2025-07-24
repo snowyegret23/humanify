@@ -20,6 +20,7 @@ export function openaiRenameWithCheckpoint({
   const client = new OpenAI({ apiKey, baseURL });
 
   return async (code: string): Promise<string> => {
+    console.log("OpenAI rename with checkpoint started, checkpointManager:", !!checkpointManager);
     return await visitAllIdentifiersWithCheckpoint(
       code,
       async (name, surroundingCode) => {

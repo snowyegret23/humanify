@@ -64,6 +64,18 @@ export async function visitAllIdentifiersWithCheckpoint(
   }
   
   let processedCount = startIndex;
+  
+  // Save initial checkpoint if starting fresh
+  if (checkpointManager && startIndex === 0) {
+    console.log("Starting fresh, creating initial checkpoint...");
+    await checkpointManager.saveCheckpoint({
+      processedIdentifiers,
+      renames: renamesMap,
+      currentFileIndex: 0,
+      currentIdentifierIndex: 0,
+      timestamp: Date.now()
+    });
+  }
 
   try {
     for (let i = startIndex; i < scopes.length; i++) {
@@ -103,7 +115,8 @@ export async function visitAllIdentifiersWithCheckpoint(
       onProgress?.(processedCount / numRenamesExpected);
       
       // Save checkpoint periodically
-      if (checkpointManager && processedCount % saveInterval === 0) {
+      if (checkpointManager && processedCount > 0 && processedCount % saveInterval === 0) {
+        console.log(`Processed ${processedCount} identifiers, saving checkpoint...`);
         await checkpointManager.saveCheckpoint({
           processedIdentifiers,
           renames: renamesMap,
