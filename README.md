@@ -121,6 +121,24 @@ humanify openai --apiKey="your-token" obfuscated-file.js
 Alternatively you can also use an environment variable `OPENAI_API_KEY`. Use
 `humanify --help` to see all available options.
 
+#### Checkpoint Feature (Resume on Failure)
+
+The OpenAI mode now supports checkpointing to resume processing if the request is interrupted:
+
+```shell
+# Enable checkpoint saving
+humanify openai --checkpoint obfuscated-file.js
+
+# Resume from last checkpoint
+humanify openai --resume obfuscated-file.js
+```
+
+When checkpoint is enabled:
+- Progress is saved every 5 renamed identifiers
+- If the process is interrupted, you can resume from where it left off
+- Partial results are saved and merged at the end
+- Checkpoint data is stored in `.checkpoints` folder in the output directory
+
 ### Gemini mode
 
 You'll need a Google AI Studio key. You can get one by signing up at
