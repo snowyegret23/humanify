@@ -33,6 +33,8 @@ export async function unminifyWithCheckpoint(
       if (checkpoint) {
         console.log(`Resuming from file ${checkpoint.currentFileIndex + 1}`);
       }
+    } else {
+      console.log("No checkpoint found. Starting from the beginning...");
     }
   }
   

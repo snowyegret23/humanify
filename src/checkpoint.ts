@@ -64,8 +64,11 @@ export class CheckpointManager {
         timestamp: parsed.timestamp,
         code: parsed.code
       };
-    } catch (error) {
-      verbose.log("No checkpoint found or error loading:", error);
+    } catch (error: any) {
+      // Only log if it's not a file not found error
+      if (error.code !== 'ENOENT') {
+        verbose.log("Error loading checkpoint:", error);
+      }
       return null;
     }
   }
@@ -119,8 +122,11 @@ export class CheckpointManager {
       }
       
       return results;
-    } catch (error) {
-      verbose.log("Error loading partial results:", error);
+    } catch (error: any) {
+      // Only log if it's not a directory not found error
+      if (error.code !== 'ENOENT') {
+        verbose.log("Error loading partial results:", error);
+      }
       return [];
     }
   }
