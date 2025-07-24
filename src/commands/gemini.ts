@@ -1,6 +1,7 @@
 import { cli } from "../cli.js";
 import prettier from "../plugins/prettier.js";
 import { unminify } from "../unminify.js";
+import { unminifyWithCheckpoint } from "../unminify-with-checkpoint.js";
 import babel from "../plugins/babel/babel.js";
 import { verbose } from "../verbose.js";
 import { geminiRename } from "../plugins/gemini-rename.js";
@@ -23,6 +24,8 @@ export const azure = cli()
     "The Google Gemini/AIStudio API key. Alternatively use GEMINI_API_KEY environment variable"
   )
   .option("--verbose", "Show verbose output")
+  .option("--checkpoint", "Enable checkpoint saving", false)
+  .option("--resume", "Resume from last checkpoint", false)
   .argument("input", "The input minified Javascript file")
   .action(async (filename, opts) => {
     if (opts.verbose) {
@@ -31,10 +34,34 @@ export const azure = cli()
 
     const apiKey = opts.apiKey ?? env("GEMINI_API_KEY");
     const contextWindowSize = parseNumber(opts.contextSize);
-
-    await unminify(filename, opts.outputDir, [
-      babel,
-      geminiRename({ apiKey, model: opts.model, contextWindowSize }),
-      prettier
-    ]);
+    
+    const renamePlugin = geminiRename({ 
+      apiKey, 
+      model: opts.model, 
+      contextWindowSize 
+    });
+    
+    // Store config for checkpoint-aware version
+    (renamePlugin as any).__config = {
+      apiKey,
+      model: opts.model,
+      contextWindowSize
+    };
+    
+    if (opts.checkpoint || opts.resume) {
+      await unminifyWithCheckpoint(filename, opts.outputDir, [
+        babel,
+        renamePlugin,
+        prettier
+      ], {
+        enableCheckpoint: true,
+        resumeFromCheckpoint: opts.resume
+      });
+    } else {
+      await unminify(filename, opts.outputDir, [
+        babel,
+        renamePlugin,
+        prettier
+      ]);
+    }
   });

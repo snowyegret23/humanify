@@ -153,6 +153,18 @@ humanify gemini --apiKey="your-token" obfuscated-file.js
 Alternatively you can also use an environment variable `GEMINI_API_KEY`. Use
 `humanify --help` to see all available options.
 
+#### Checkpoint Feature (Resume on Failure)
+
+The Gemini mode also supports checkpointing:
+
+```shell
+# Enable checkpoint saving
+humanify gemini --checkpoint obfuscated-file.js
+
+# Resume from last checkpoint
+humanify gemini --resume obfuscated-file.js
+```
+
 ### Local mode
 
 The local mode uses a pre-trained language model to deobfuscate the code. The
@@ -179,6 +191,20 @@ the process significantly.
 
 Humanify has native support for Apple's M-series chips, and can fully utilize
 the GPU capabilities of your Mac.
+
+#### Checkpoint Feature (Resume on Failure)
+
+The Local mode also supports checkpointing:
+
+```shell
+# Enable checkpoint saving
+humanify local --checkpoint obfuscated-file.js
+
+# Resume from last checkpoint
+humanify local --resume obfuscated-file.js
+```
+
+Note: Local mode saves checkpoints every 10 identifiers (compared to 5 for API-based modes) to balance between checkpoint frequency and performance.
 
 ## Features
 

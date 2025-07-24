@@ -64,16 +64,38 @@ export async function unminifyWithCheckpoint(
       const pluginsWithCheckpoint = plugins.map((plugin, pluginIndex) => {
         return async (currentCode: string) => {
           try {
-            // If this is the rename plugin and checkpoint is enabled
-            if (plugin.type === 'openaiRename' && checkpointManager) {
-              // Use the checkpoint-aware version
-              const { openaiRenameWithCheckpoint } = await import("./plugins/openai/openai-rename-with-checkpoint.js");
-              const pluginConfig = plugin.__config;
-              if (pluginConfig) {
+            // If this is a rename plugin and checkpoint is enabled
+            if (checkpointManager && (plugin as any).__config) {
+              const pluginConfig = (plugin as any).__config;
+              
+              // OpenAI plugin
+              if (plugin.name === 'openaiRename') {
+                const { openaiRenameWithCheckpoint } = await import("./plugins/openai/openai-rename-with-checkpoint.js");
                 const checkpointAwarePlugin = openaiRenameWithCheckpoint({
                   ...pluginConfig,
                   checkpointManager
                 });
+                return await checkpointAwarePlugin(currentCode);
+              }
+              
+              // Gemini plugin
+              if (plugin.name === 'geminiRename') {
+                const { geminiRenameWithCheckpoint } = await import("./plugins/gemini-rename-with-checkpoint.js");
+                const checkpointAwarePlugin = geminiRenameWithCheckpoint({
+                  ...pluginConfig,
+                  checkpointManager
+                });
+                return await checkpointAwarePlugin(currentCode);
+              }
+              
+              // Local plugin
+              if (plugin.name === 'localReanme' || plugin.name === 'localRename') {
+                const { localRenameWithCheckpoint } = await import("./plugins/local-llm-rename/local-llm-rename-with-checkpoint.js");
+                const checkpointAwarePlugin = localRenameWithCheckpoint(
+                  pluginConfig.prompt,
+                  pluginConfig.contextWindowSize,
+                  checkpointManager
+                );
                 return await checkpointAwarePlugin(currentCode);
               }
             }
