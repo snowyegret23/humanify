@@ -104,18 +104,18 @@ export class CheckpointManager {
     }
   }
   
-  async loadPartialResults(): Promise<any[]> {
+  async loadPartialResults(): Promise<PartialResult[]> {
     try {
       const files = await fs.readdir(this.checkpointDir);
       const partialFiles = files.filter(f => f.startsWith("partial_"));
       
-      const results = [];
+      const results: PartialResult[] = [];
       for (const file of partialFiles) {
         const data = await fs.readFile(
           path.join(this.checkpointDir, file), 
           "utf-8"
         );
-        results.push(JSON.parse(data));
+        results.push(JSON.parse(data) as PartialResult);
       }
       
       return results;
