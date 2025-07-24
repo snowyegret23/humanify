@@ -39,7 +39,7 @@ export function showPercentage(percentage: number, current?: number, total?: num
   } else {
     verbose.log(progressText);
   }
-  if (percentage === 1) {
+  if ((current !== undefined && total !== undefined && current === total) || percentage === 1) {
     process.stdout.write("\n");
   }
 }
