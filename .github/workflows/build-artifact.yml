@@ -1,4 +1,4 @@
-name: Build and Create Artifact
+name: Build Windows Artifact
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -19,6 +19,9 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - name: Install dependencies
         run: npm install
 
@@ -28,6 +31,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: humanify-build
+          name: humanify-build-windows
           path: .
           retention-days: 5
